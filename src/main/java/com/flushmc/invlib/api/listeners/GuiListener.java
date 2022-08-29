@@ -64,8 +64,6 @@ public class GuiListener implements Listener {
                     }
                 }
 
-                player.sendMessage(e.getAction().name());
-
                 // Cancel other ClickTypes
                 if (Arrays.stream(actions).toList().contains(e.getAction()) || e.getClick().isShiftClick()) {
                     e.setCancelled(true);
