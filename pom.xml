@@ -43,4 +43,12 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub</name>
+            <url>https://maven.pkg.github.com/Flush-mc/InvLib</url>
+        </repository>
+    </distributionManagement>
+
 </project>
