@@ -39,7 +39,7 @@ public abstract class SimpleGui implements IGui {
         fillInventoryWithFillItem(inv.get());
 
         // Build page using the contents;
-        onBuild(getConfig(), getContent());
+        onBuild(player, getConfig(), getContent());
         getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
 
         // Start a update engine for this Gui
@@ -49,7 +49,7 @@ public abstract class SimpleGui implements IGui {
                     getConfig().getInterval(),
                     getConfig().getInterval(),
                     () -> {
-                        onUpdate(getConfig(), getContent());
+                        onUpdate(player, getConfig(), getContent());
                         fillInventoryWithFillItem(inv.get());
                         getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
                         player.updateInventory();
@@ -92,11 +92,11 @@ public abstract class SimpleGui implements IGui {
     }
 
     @Override
-    public void onUpdate(IGuiConfig iConfig, GuiContent content) {
+    public void onUpdate(Player player, IGuiConfig iConfig, GuiContent content) {
     }
 
     @Override
-    public abstract void onBuild(IGuiConfig iConfig, GuiContent content);
+    public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
 
     private Inventory buildSkeleton(Player player) {
         var inv = Bukkit.createInventory(player, 9 * getConfig().getRows(), getTitle());

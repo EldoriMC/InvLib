@@ -49,7 +49,7 @@ public abstract class PagedGui implements IGui {
 
 
         // Build page using the contents;
-        onBuild(getConfig(), getContent());
+        onBuild(player, getConfig(), getContent());
         updateGui();
         getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
 
@@ -60,7 +60,7 @@ public abstract class PagedGui implements IGui {
                     getConfig().getInterval(),
                     getConfig().getInterval(),
                     () -> {
-                        onUpdate(getConfig(), getContent());
+                        onUpdate(player, getConfig(), getContent());
                         fillInventoryWithFillItem(inv.get());
                         updateGui();
                         getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
@@ -104,11 +104,11 @@ public abstract class PagedGui implements IGui {
     }
 
     @Override
-    public void onUpdate(IGuiConfig iConfig, GuiContent content) {
+    public void onUpdate(Player player, IGuiConfig iConfig, GuiContent content) {
     }
 
     @Override
-    public abstract void onBuild(IGuiConfig iConfig, GuiContent content);
+    public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
 
     public abstract void onClick(Player player, ItemStack item, ClickType clickType);
 

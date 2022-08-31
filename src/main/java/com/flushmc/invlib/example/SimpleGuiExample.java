@@ -7,6 +7,7 @@ import com.flushmc.invlib.api.SimpleGui;
 import com.flushmc.invlib.api.models.config.GuiConfig;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class SimpleGuiExample extends SimpleGui {
     }
 
     @Override
-    public void onBuild(IGuiConfig iConfig, GuiContent content) {
+    public void onBuild(Player player, IGuiConfig iConfig, GuiContent content) {
         content.add(
                 new GuiItem(
                         new ItemStack(Material.PAINTING),
@@ -58,7 +59,7 @@ public class SimpleGuiExample extends SimpleGui {
     }
 
     @Override
-    public void onUpdate(IGuiConfig iConfig, GuiContent content) {
+    public void onUpdate(Player player, IGuiConfig iConfig, GuiContent content) {
         var random = new Random();
         var config = (GuiConfig) iConfig;
         config.setFillItem(new ItemStack(glasses.get(random.nextInt(glasses.size()))));

@@ -43,7 +43,7 @@ public class PagedGuiExample extends PagedGui {
     }
 
     @Override
-    public void onBuild(IGuiConfig iConfig, GuiContent content) {
+    public void onBuild(Player player, IGuiConfig iConfig, GuiContent content) {
         setItens(
                 List.of(
                         new ItemStack(Material.STONE_SWORD),
@@ -66,7 +66,7 @@ public class PagedGuiExample extends PagedGui {
     }
 
     @Override
-    public void onUpdate(IGuiConfig iConfig, GuiContent content) {
+    public void onUpdate(Player player, IGuiConfig iConfig, GuiContent content) {
         var random = new Random();
         var config = (GuiConfig) iConfig;
         config.setFillItem(new ItemStack(glasses.get(random.nextInt(glasses.size()))));
