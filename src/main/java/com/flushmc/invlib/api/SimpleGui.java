@@ -26,21 +26,26 @@ public abstract class SimpleGui implements IGui {
     private int id;
     private BukkitTask task;
     private Listener guiEvent;
+    private AtomicReference<Inventory> inventory;
+    private Player player;
 
     public SimpleGui(String title, Supplier<GuiConfig> configCallback) {
         this.title = ChatColor.translateAlternateColorCodes('&', title == null ? "" : title);
         this.config = configCallback.get();
         this.content = new GuiContent();
+        this.inventory = new AtomicReference<>();
     }
 
     @Override
     public void open(Player player) {
-        AtomicReference<Inventory> inv = new AtomicReference<>(buildSkeleton(player));
-        fillInventoryWithFillItem(inv.get());
+        this.player = player;
+
+        inventory.set(buildSkeleton(player));
+        fillInventoryWithFillItem(inventory.get());
 
         // Build page using the contents;
         onBuild(player, getConfig(), getContent());
-        getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
+        getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
 
         // Start a update engine for this Gui
         if (getConfig().getInterval() > 0) {
@@ -50,8 +55,8 @@ public abstract class SimpleGui implements IGui {
                     getConfig().getInterval(),
                     () -> {
                         onUpdate(player, getConfig(), getContent());
-                        fillInventoryWithFillItem(inv.get());
-                        getContent().getItens().forEach(item -> inv.get().setItem(item.getSlot(), item.getItem()));
+                        fillInventoryWithFillItem(inventory.get());
+                        getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
                         player.updateInventory();
                     }
             );
@@ -70,7 +75,7 @@ public abstract class SimpleGui implements IGui {
         }
 
         try {
-            player.openInventory(inv.get());
+            player.openInventory(inventory.get());
         } catch (Exception e) {
             InvLib.getAsyncInventoryInteraction().open(player, this);
         }
@@ -97,6 +102,16 @@ public abstract class SimpleGui implements IGui {
 
     @Override
     public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
+
+    public void refresh() {
+        if (player != null && player.isOnline()) {
+            inventory.set(buildSkeleton(player));
+            fillInventoryWithFillItem(inventory.get());
+
+            onUpdate(player, getConfig(), getContent());
+            getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
+        }
+    }
 
     private Inventory buildSkeleton(Player player) {
         var inv = Bukkit.createInventory(player, 9 * getConfig().getRows(), getTitle());

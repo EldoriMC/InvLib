@@ -11,5 +11,6 @@ public interface IGuiConfig {
     int getInterval();
     Sound getSound();
     ItemStack getFillItem();
+    boolean isRefreshAfterClick();
 
 }

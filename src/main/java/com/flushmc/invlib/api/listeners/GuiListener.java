@@ -103,6 +103,10 @@ public class GuiListener implements Listener {
                                         e.getClick()
                                 )
                         );
+
+                        if (gui.getConfig().isRefreshAfterClick()) {
+                            gui.refresh();
+                        }
                     }
 
                     e.setCancelled(true);

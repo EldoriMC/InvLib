@@ -15,5 +15,6 @@ public class GuiConfig implements IGuiConfig {
     @Getter @Setter private int rows = 3;
     @Getter @Setter private Sound sound;
     @Getter @Setter private ItemStack fillItem;
+    @Getter @Setter private boolean refreshAfterClick = true;
 
 }

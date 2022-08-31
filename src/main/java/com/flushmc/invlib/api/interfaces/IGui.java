@@ -10,6 +10,7 @@ public interface IGui {
     String getTitle();
     void open(Player player);
     void close(Player player);
+    void refresh();
 
     void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
     void onUpdate(Player player, IGuiConfig iConfig, GuiContent content);
