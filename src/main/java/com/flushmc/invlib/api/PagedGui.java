@@ -124,6 +124,7 @@ public abstract class PagedGui implements IGui {
 
             onUpdate(player, getConfig(), getContent());
             getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
+            player.updateInventory();
         }
     }
 
