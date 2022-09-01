@@ -105,9 +105,7 @@ public abstract class SimpleGui implements IGui {
 
     public void refresh() {
         if (player != null && player.isOnline()) {
-            inventory.set(buildSkeleton(player));
             fillInventoryWithFillItem(inventory.get());
-
             onUpdate(player, getConfig(), getContent());
             getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
             player.updateInventory();

@@ -52,7 +52,6 @@ public abstract class PagedGui implements IGui {
         inventory.set(buildSkeleton(player));
         fillInventoryWithFillItem(inventory.get());
 
-
         // Build page using the contents;
         onBuild(player, getConfig(), getContent());
         updateGui();
@@ -119,7 +118,6 @@ public abstract class PagedGui implements IGui {
 
     public void refresh() {
         if (player != null && player.isOnline()) {
-            inventory.set(buildSkeleton(player));
             fillInventoryWithFillItem(inventory.get());
 
             onUpdate(player, getConfig(), getContent());
