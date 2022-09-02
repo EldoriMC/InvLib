@@ -27,7 +27,7 @@ public abstract class SimpleGui implements IGui {
     private BukkitTask task;
     private Listener guiEvent;
     private AtomicReference<Inventory> inventory;
-    private Player player;
+    @Getter private Player player;
 
     public SimpleGui(String title, Supplier<GuiConfig> configCallback) {
         this.title = ChatColor.translateAlternateColorCodes('&', title == null ? "" : title);
@@ -103,10 +103,20 @@ public abstract class SimpleGui implements IGui {
     @Override
     public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
 
+    @Override
+    public void onClose() {
+        if (guiEvent != null) {
+            HandlerList.unregisterAll(guiEvent);
+        }
+        if (task != null && !task.isCancelled()) {
+            task.cancel();
+        }
+    }
+
     public void refresh() {
         if (player != null && player.isOnline()) {
-            fillInventoryWithFillItem(inventory.get());
             onUpdate(player, getConfig(), getContent());
+            fillInventoryWithFillItem(inventory.get());
             getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
             player.updateInventory();
         }

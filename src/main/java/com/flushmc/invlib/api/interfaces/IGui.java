@@ -14,5 +14,6 @@ public interface IGui {
 
     void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
     void onUpdate(Player player, IGuiConfig iConfig, GuiContent content);
+    void onClose();
 
 }

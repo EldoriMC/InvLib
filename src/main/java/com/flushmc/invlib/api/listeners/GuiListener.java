@@ -33,12 +33,16 @@ public class GuiListener implements Listener {
 
     @EventHandler
     void onQuit(PlayerQuitEvent e) {
-        gui.close(e.getPlayer());
+        var inventory = e.getPlayer().getOpenInventory().getTopInventory();
+        if (inventory.hashCode() == id) {
+            gui.close(e.getPlayer());
+        }
     }
 
     @EventHandler
     void onClose(InventoryCloseEvent e) {
         if (e.getInventory().hashCode() == id) {
+            gui.onClose();
             gui.close((Player) e.getPlayer());
         }
     }

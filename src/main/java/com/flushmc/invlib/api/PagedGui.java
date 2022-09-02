@@ -35,7 +35,7 @@ public abstract class PagedGui implements IGui {
     private BukkitTask task;
     private Listener guiEvent;
     private AtomicReference<Inventory> inventory;
-    private Player player;
+    @Getter private Player player;
 
     public PagedGui(String title, Supplier<PagedGuiConfig> configCallback) {
         this.title = ChatColor.translateAlternateColorCodes('&', title == null ? "" : title);
@@ -112,15 +112,25 @@ public abstract class PagedGui implements IGui {
     }
 
     @Override
+    public void onClose() {
+        if (guiEvent != null) {
+            HandlerList.unregisterAll(guiEvent);
+        }
+        if (task != null && !task.isCancelled()) {
+            task.cancel();
+        }
+    }
+
+    @Override
     public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
 
     public abstract void onClick(Player player, ItemStack item, ClickType clickType);
 
     public void refresh() {
         if (player != null && player.isOnline()) {
-            fillInventoryWithFillItem(inventory.get());
-
             onUpdate(player, getConfig(), getContent());
+            fillInventoryWithFillItem(inventory.get());
+            updateGui();
             getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
             player.updateInventory();
         }
@@ -180,15 +190,13 @@ public abstract class PagedGui implements IGui {
                 );
             } else {
                 if (getConfig().getFillItem() != null && getConfig().getFillItem().getType() != Material.AIR) {
-                    if (getConfig().isCompleteEmptySlotsIfFillItemIsNotNull()) {
-                        getContent().add(
-                                new GuiItem(
-                                        getConfig().getFillItem(),
-                                        getConfig().getSlots().get(slot),
-                                        null
-                                )
-                        );
-                    }
+                    getContent().add(
+                            new GuiItem(
+                                    getConfig().isCompleteEmptySlotsIfFillItemIsNotNull() ? getConfig().getFillItem() : new ItemStack(Material.AIR),
+                                    getConfig().getSlots().get(slot),
+                                    null
+                            )
+                    );
                 } else {
                     getContent().add(
                             new GuiItem(
