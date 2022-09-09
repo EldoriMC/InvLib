@@ -42,7 +42,7 @@ public class GuiListener implements Listener {
     @EventHandler
     void onClose(InventoryCloseEvent e) {
         if (e.getInventory().hashCode() == id) {
-            gui.onClose();
+            gui.onClose((Player) e.getPlayer());
             gui.close((Player) e.getPlayer());
         }
     }

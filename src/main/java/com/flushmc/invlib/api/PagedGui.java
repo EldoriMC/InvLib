@@ -112,7 +112,7 @@ public abstract class PagedGui implements IGui {
     }
 
     @Override
-    public void onClose() {
+    public void onClose(Player player) {
         if (guiEvent != null) {
             HandlerList.unregisterAll(guiEvent);
         }

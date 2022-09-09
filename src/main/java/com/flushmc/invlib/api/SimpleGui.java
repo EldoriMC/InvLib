@@ -104,7 +104,7 @@ public abstract class SimpleGui implements IGui {
     public abstract void onBuild(Player player, IGuiConfig iConfig, GuiContent content);
 
     @Override
-    public void onClose() {
+    public void onClose(Player player) {
         if (guiEvent != null) {
             HandlerList.unregisterAll(guiEvent);
         }
