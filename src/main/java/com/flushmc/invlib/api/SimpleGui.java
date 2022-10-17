@@ -163,6 +163,10 @@ public abstract class SimpleGui implements IGui {
         return actionSlots.stream().filter(action -> action.getSlot() == slot).findFirst().orElse(null);
     }
 
+    public void removeActionSlot(int slot) {
+        actionSlots = actionSlots.stream().filter(action -> action.getSlot() != slot).toList();
+    }
+
     public void refresh() {
         if (player != null && player.isOnline()) {
             onUpdate(player, getConfig(), getContent());
