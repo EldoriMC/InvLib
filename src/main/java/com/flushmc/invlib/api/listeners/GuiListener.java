@@ -1,8 +1,11 @@
 package com.flushmc.invlib.api.listeners;
 
 import com.flushmc.invlib.api.PagedGui;
+import com.flushmc.invlib.api.SimpleGui;
 import com.flushmc.invlib.api.interfaces.IGui;
+import com.flushmc.invlib.api.models.ActionSlot;
 import com.flushmc.invlib.api.models.GuiAction;
+import com.flushmc.invlib.api.models.config.GuiConfig;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
@@ -13,14 +16,18 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class GuiListener implements Listener {
 
-    @NonNull private int id;
-    @NonNull private IGui gui;
+    @NonNull
+    private int id;
+    @NonNull
+    private IGui gui;
     private InventoryAction[] actions = new InventoryAction[]{
             InventoryAction.COLLECT_TO_CURSOR,
             InventoryAction.DROP_ALL_CURSOR,
@@ -42,8 +49,24 @@ public class GuiListener implements Listener {
     @EventHandler
     void onClose(InventoryCloseEvent e) {
         if (e.getInventory().hashCode() == id) {
-            gui.onClose((Player) e.getPlayer());
-            gui.close((Player) e.getPlayer());
+            var player = (Player) e.getPlayer();
+            if (gui instanceof SimpleGui simpleGui) {
+                var config = (GuiConfig) simpleGui.getConfig();
+                if (config.isRestoreActionItensOnClose() && !simpleGui.getActionSlots().isEmpty()) {
+
+                    var actions = simpleGui.getActionSlots();
+                    var items = actions.stream().map(ActionSlot::getItem).filter(Objects::nonNull).toList();
+                    for (ItemStack stack : items) {
+                        if (player.getInventory().firstEmpty() != -1) {
+                            player.getInventory().addItem(stack);
+                        } else {
+                            player.getWorld().dropItem(player.getLocation(), stack);
+                        }
+                    }
+                }
+            }
+            gui.onClose(player);
+            gui.close(player);
         }
     }
 
@@ -65,32 +88,48 @@ public class GuiListener implements Listener {
                 if (clickedInventory.hashCode() != id) {
                     if (gui.getConfig().isBlockedBottomInventory()) {
                         e.setCancelled(true);
+                        return;
                     }
                 }
 
                 // Cancel other ClickTypes
                 if (Arrays.stream(actions).toList().contains(e.getAction()) || e.getClick().isShiftClick()) {
                     e.setCancelled(true);
+                    return;
                 }
 
                 // Block interaction on fillItem
                 if (gui.getConfig().getFillItem() != null && gui.getConfig().getFillItem().getType() != Material.AIR) {
-                    if (clickedItem == gui.getConfig().getFillItem()) {
-                        e.setCancelled(true);
-                        player.updateInventory();
+                    if (clickedItem != null) {
+                        if (clickedItem.hashCode() == gui.getConfig().getFillItem().hashCode()) {
+                            e.setCancelled(true);
+                            return;
+                        }
                     }
+
                 }
 
                 // Detect only Top interractions
                 if (clickedInventory.hashCode() == id) {
 
-                    // Block top interract
-                    if (gui instanceof PagedGui && gui.getConfig().isBlockedTopInventory()) {
-                        e.setCancelled(true);
+                    // Allow ActionSlot
+                    if (gui instanceof SimpleGui simpleGui) {
+                        var actions = simpleGui.getActionSlots();
+                        if (!actions.isEmpty()) {
+                            var action = simpleGui.getActionSlot(clickedSlot);
+                            if (action != null) {
+                                return;
+                            }
+                        }
                     }
 
-                    if (gui.getConfig().isBlockedTopInventory()) {
+                    // Block top interract
+                    if (gui instanceof PagedGui) {
                         e.setCancelled(true);
+                    } else {
+                        if (gui.getConfig().isBlockedTopInventory()) {
+                            e.setCancelled(true);
+                        }
                     }
 
                     var guiItem = gui.getContent().getItens().stream()
@@ -111,9 +150,8 @@ public class GuiListener implements Listener {
                         if (gui.getConfig().isRefreshAfterClick()) {
                             gui.refresh();
                         }
+                        e.setCancelled(true);
                     }
-
-                    e.setCancelled(true);
                 }
             }
         }

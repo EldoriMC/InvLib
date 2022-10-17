@@ -16,5 +16,6 @@ public class GuiConfig implements IGuiConfig {
     @Getter @Setter private Sound sound;
     @Getter @Setter private ItemStack fillItem;
     @Getter @Setter private boolean refreshAfterClick = true;
+    @Getter @Setter private boolean restoreActionItensOnClose = false;
 
 }
