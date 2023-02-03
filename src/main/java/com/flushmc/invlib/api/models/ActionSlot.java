@@ -11,9 +11,14 @@ public class ActionSlot {
 
     @Getter @Setter private ItemStack item;
     @Getter private int slot;
+    @Getter @Setter private boolean blocked;
 
     public static ActionSlot of(int slot) {
-        return new ActionSlot(new ItemStack(Material.STRUCTURE_VOID), slot);
+        return of(slot, false);
+    }
+
+    public static ActionSlot of(int slot, boolean blocked) {
+        return new ActionSlot(new ItemStack(Material.STRUCTURE_VOID), slot, blocked);
     }
 
 }

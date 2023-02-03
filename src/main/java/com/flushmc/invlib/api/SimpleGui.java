@@ -82,14 +82,16 @@ public abstract class SimpleGui implements IGui {
                             }
                             if (
                                     (action.getItem() == null && inventoryItem != null) ||
-                                            (action.getItem() != null && inventoryItem == null) ||
-                                            action.getItem().hashCode() != inventoryItem.hashCode()
+                                    (action.getItem() != null && inventoryItem == null) ||
+                                    action.getItem().hashCode() != inventoryItem.hashCode()
                             ) {
-                                action.setItem(inventoryItem);
-                                onUpdate(player, getConfig(), getContent());
-                                fillInventoryWithFillItem(inventory.get());
-                                getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
-                                player.updateInventory();
+                                if (!action.isBlocked()) {
+                                    action.setItem(inventoryItem);
+                                    onUpdate(player, getConfig(), getContent());
+                                    fillInventoryWithFillItem(inventory.get());
+                                    getContent().getItens().forEach(item -> inventory.get().setItem(item.getSlot(), item.getItem()));
+                                    player.updateInventory();
+                                }
                             }
                         }
                     }
@@ -163,8 +165,11 @@ public abstract class SimpleGui implements IGui {
         return actionSlots.stream().filter(action -> action.getSlot() == slot).findFirst().orElse(null);
     }
 
-    public void removeActionSlot(int slot) {
-        actionSlots = actionSlots.stream().filter(action -> action.getSlot() != slot).toList();
+    public void toggleActionSlot(int slot) {
+        var action = getActionSlot(slot);
+        if (action != null) {
+            action.setBlocked(!action.isBlocked());
+        }
     }
 
     public void refresh() {

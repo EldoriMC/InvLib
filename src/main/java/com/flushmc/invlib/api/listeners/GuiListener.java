@@ -117,7 +117,7 @@ public class GuiListener implements Listener {
                         var actions = simpleGui.getActionSlots();
                         if (!actions.isEmpty()) {
                             var action = simpleGui.getActionSlot(clickedSlot);
-                            if (action != null) {
+                            if (action != null && !action.isBlocked()) {
                                 return;
                             }
                         }
